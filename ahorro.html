@@ -1,0 +1,103 @@
+<!-- Inserta este código en un bloque "HTML personalizado" de WordPress -->
+<div id="edu-ahorro-wp" style="background-color: #f4f7f6; padding: 20px; border-radius: 15px; max-width: 800px; margin: auto; border: 1px solid #ddd;">
+    
+    <style>
+        #edu-ahorro-wp h2, #edu-ahorro-wp h3 { color: #1b5e20 !important; }
+        .card-ahorro { background: #ffffff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .meta-box { background: #fff8e1; border-left: 5px solid #ffa000; padding: 15px; }
+        .canvas-container { text-align: center; margin: 20px 0; }
+        #canvasAhorro { background: #fff; border: 2px solid #81c784; max-width: 100%; border-radius: 8px; cursor: pointer; }
+    </style>
+
+    <div style="background-color: #1b5e20; color: white; text-align: center; padding: 20px; border-radius: 10px;">
+        <h1 style="color: white !important; margin: 0;">El Ahorro: Proceso Técnico y Financiero</h1>
+        <p>Guía para jóvenes en la CDMX</p>
+    </div>
+
+    <div class="card-ahorro" style="margin-top: 20px;">
+        <h2>¿Qué es el ahorro?</h2>
+        <p>Es la parte del ingreso que **no gastas inmediatamente**, guardándola para usarla en el futuro [1]. Esto te permite contar con recursos para una **emergencia, una meta personal o estabilidad** [1].</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+        <div class="card-ahorro meta-box" style="flex: 1; min-width: 280px;">
+            <h3>El poder de 10 pesos</h3>
+            <p>Si ahorras **$10 diarios**, en un mes tendrás **$300** y en un año **más de $3,600** [2].</p>
+            <label>Días de ahorro: </label>
+            <input type="number" id="inputDias" value="30" min="1" style="padding: 5px; width: 60px;">
+            <p>Resultado: <strong id="txtResultado" style="color: #2e7d32; font-size: 1.2em;">$300</strong></p>
+        </div>
+
+        <div class="card-ahorro" style="flex: 1; min-width: 280px;">
+            <h3>¿Por qué ahorrar?</h3>
+            <ul style="padding-left: 20px;">
+                <li><strong>Emergencias:</strong> Como fallas en el celular o gastos escolares [3].</li>
+                <li><strong>Metas:</strong> Comprar una bici o iniciar un negocio [4].</li>
+                <li><strong>Independencia:</strong> Libertad para decidir sin depender totalmente de otros [5].</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card-ahorro canvas-container">
+        <h3>Evita los "Gastos Hormiga"</h3>
+        <p>Mueve el ratón o toca para recolectar monedas y esquiva los antojitos que afectan tu presupuesto [6].</p>
+        <canvas id="canvasAhorro" width="600" height="200"></canvas>
+        <p><strong>Puntos de Estabilidad: <span id="puntos">0</span></strong></p>
+    </div>
+
+    <div class="card-ahorro">
+        <h3>Consejos para la CDMX</h3>
+        <p>En una ciudad dinámica con alto costo de vida [5, 7], puedes:</p>
+        <ul>
+            <li>Hacer un <strong>presupuesto</strong> para ver dónde recortar [6].</li>
+            <li>Usar <strong>herramientas digitales</strong> como apps (Finerio, bancos digitales) [8].</li>
+            <li>Aprovechar tu <strong>credencial de estudiante</strong> en transporte y eventos [8].</li>
+        </ul>
+    </div>
+
+    <script>
+        (function() {
+            // Calculadora de ahorro basada en las fuentes [2]
+            const input = document.getElementById('inputDias');
+            const res = document.getElementById('txtResultado');
+            if(input) {
+                input.addEventListener('input', () => { res.innerText = `$${input.value * 10}`; });
+            }
+
+            // Juego interactivo
+            const canvas = document.getElementById('canvasAhorro');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const puntosTxt = document.getElementById('puntos');
+            let score = 0, pX = 275, items = [];
+
+            function crear() {
+                items.push({ x: Math.random()*(canvas.width-20), y: 0, t: Math.random()>0.4?'m':'g', v: 2+Math.random()*2 });
+            }
+
+            canvas.addEventListener('mousemove', e => { pX = e.clientX - canvas.getBoundingClientRect().left - 30; });
+            canvas.addEventListener('touchmove', e => { 
+                pX = e.touches.clientX - canvas.getBoundingClientRect().left - 30;
+                e.preventDefault();
+            }, {passive: false});
+
+            function loop() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = '#1b5e20'; ctx.fillRect(pX, 180, 60, 10);
+                items.forEach((o, i) => {
+                    o.y += o.v;
+                    if(o.t === 'm') { ctx.fillStyle='#ffa000'; ctx.beginPath(); ctx.arc(o.x,o.y,8,0,7); ctx.fill(); }
+                    else { ctx.font='18px Arial'; ctx.fillText('🍟', o.x, o.y); }
+                    if(o.y>170 && o.x>pX && o.x<pX+60) {
+                        score += (o.t==='m'?10:-15); puntosTxt.innerText = Math.max(0, score);
+                        items.splice(i,1);
+                    }
+                    if(o.y>200) items.splice(i,1);
+                });
+                if(Math.random()<0.03) crear();
+                requestAnimationFrame(loop);
+            }
+            loop();
+        })();
+    </script>
+</div>
